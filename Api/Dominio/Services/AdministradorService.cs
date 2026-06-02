@@ -16,7 +16,7 @@ public class AdministradorService : IAdministradorService
 
     public Administrador? Login(LoginDTO login)
     {
-        return _contexto.Administradores.FirstOrDefault(a => a.Email == login.Username && a.Senha == login.Password);
+        return _contexto.Administradores.FirstOrDefault(a => a.Email == login.Email && a.Senha == login.Senha);
     }
 
     public Administrador Incluir(Administrador administrador)
