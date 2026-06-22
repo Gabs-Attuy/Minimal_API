@@ -54,8 +54,10 @@ public class VeiculoService : IVeiculoService
         int itensPorPagina = 10;
 
         if (pagina != null)
-            query.Skip(((int)pagina - 1) * itensPorPagina).Take(itensPorPagina);
-        
+            query = query
+            .Skip(((int)pagina - 1) * itensPorPagina)
+            .Take(itensPorPagina);
+
         return query.ToList();
     }
 }

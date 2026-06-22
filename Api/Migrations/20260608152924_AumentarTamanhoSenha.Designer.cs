@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Minimal_API.Infraestrutura.Db;
 
@@ -10,9 +11,11 @@ using Minimal_API.Infraestrutura.Db;
 namespace minimal_api.Migrations
 {
     [DbContext(typeof(DbContexto))]
-    partial class DbContextoModelSnapshot : ModelSnapshot
+    [Migration("20260608152924_AumentarTamanhoSenha")]
+    partial class AumentarTamanhoSenha
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace minimal_api.Migrations
                             Id = 1,
                             Email = "administrador@minimalapi.com",
                             Perfil = "Adm",
-                            Senha = "AQAAAAIAAYagAAAAEFekWx9+mlXuRK8qanxI4JXEduJyR/Pd+cBS5pWRIqyQpWlmi1dD+lWrIzbhc6P40w=="
+                            Senha = "123456"
                         });
                 });
 

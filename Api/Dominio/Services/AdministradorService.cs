@@ -8,19 +8,28 @@ namespace Minimal_API.Dominio.Services;
 public class AdministradorService : IAdministradorService
 {
     private readonly DbContexto _contexto;
-
-    public AdministradorService(DbContexto contexto)
+    private readonly ISenhaHasher _senhaHasher;
+    public AdministradorService(DbContexto contexto, ISenhaHasher senhaHasher)
     {
         _contexto = contexto;
+        _senhaHasher = senhaHasher;
     }
 
     public Administrador? Login(LoginDTO login)
     {
-        return _contexto.Administradores.FirstOrDefault(a => a.Email == login.Email && a.Senha == login.Senha);
+        var administrador = _contexto.Administradores.FirstOrDefault(a => a.Email == login.Email);
+        if (administrador != null && _senhaHasher.VerificarSenha(login.Senha, administrador.Senha))
+        {
+            return administrador;
+        }
+
+        return null;
     }
 
     public Administrador Incluir(Administrador administrador)
     {
+        administrador.Senha = _senhaHasher.HashSenha(administrador.Senha);
+
         _contexto.Administradores.Add(administrador);
         _contexto.SaveChanges();
         return administrador;
@@ -33,8 +42,12 @@ public class AdministradorService : IAdministradorService
         int itensPorPagina = 10;
 
         if (pagina != null)
-            query.Skip(((int)pagina - 1) * itensPorPagina).Take(itensPorPagina);
-        
+        {
+            query = query
+                .Skip(((int)pagina - 1) * itensPorPagina)
+                .Take(itensPorPagina);
+        }
+
         return query.ToList();
     }
 

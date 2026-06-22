@@ -23,7 +23,7 @@ public class DbContexto : DbContext
             {
                 Id = 1,
                 Email = "administrador@minimalapi.com",
-                Senha = "123456",
+                Senha = "AQAAAAIAAYagAAAAEFekWx9+mlXuRK8qanxI4JXEduJyR/Pd+cBS5pWRIqyQpWlmi1dD+lWrIzbhc6P40w==",
                 Perfil = "Adm"
             }
         );

@@ -14,7 +14,7 @@ public class Administrador
     public string Email { get; set; } = default!;
 
     [Required]
-    [StringLength(50)]
+    [StringLength(255)]
     public string Senha { get; set; } = default!;
 
     [Required]

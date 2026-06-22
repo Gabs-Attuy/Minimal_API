@@ -16,6 +16,7 @@ using Minimal_API.Dominio.DTOs;
 using Minimal_API.Infraestrutura.Db;
 
 namespace Minimal_API;
+
 public class Startup
 {
     public Startup(IConfiguration configuration)
@@ -48,10 +49,18 @@ public class Startup
 
         services.AddScoped<IAdministradorService, AdministradorService>();
         services.AddScoped<IVeiculoService, VeiculoService>();
+        services.AddScoped<ISenhaHasher, SenhaHasherService>();
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Minimal API - Gestão de Veículos",
+                Version = "v1",
+                Description = "API desenvolvida em ASP.NET 8 Minimal API com autenticação JWT, Entity Framework Core e controle de acesso por perfil (Adm e Editor)."
+            });
+
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
@@ -112,7 +121,11 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             #region Home
-            endpoints.MapGet("/", () => Results.Json(new Home())).AllowAnonymous().WithTags("Home");
+
+            endpoints.MapGet("/", () => Results.Json(new Home()))
+            .AllowAnonymous()
+            .WithTags("Home");
+
             #endregion
 
 
@@ -158,7 +171,12 @@ public class Startup
                 {
                     return Results.Unauthorized();
                 }
-            }).AllowAnonymous().WithTags("Administradores");
+            })
+            .AllowAnonymous()
+            .WithTags("Administradores")
+            .WithName("LoginAdministrador")
+            .WithSummary("Autentica um administrador")
+            .WithDescription("Realiza login e retorna um token JWT válido por 1 dia.");
 
 
             endpoints.MapGet("/administradores", ([FromQuery] int? pagina, IAdministradorService administradorService) =>
@@ -179,7 +197,10 @@ public class Startup
             })
             .RequireAuthorization()
             .RequireAuthorization(new AuthorizeAttribute { Roles = "Adm" })
-            .WithTags("Administradores");
+            .WithTags("Administradores")
+            .WithName("TodosAdministradores")
+            .WithSummary("Lista todos os administradores")
+            .WithDescription("Retorna uma lista paginada de todos os administradores cadastrados.");
 
 
             endpoints.MapGet("/administradores/{id}", ([FromRoute] int id, IAdministradorService administradorService) =>
@@ -199,7 +220,10 @@ public class Startup
             })
             .RequireAuthorization()
             .RequireAuthorization(new AuthorizeAttribute { Roles = "Adm" })
-            .WithTags("Administradores");
+            .WithTags("Administradores")
+            .WithName("BuscarAdministradorPorId")
+            .WithSummary("Busca um administrador por ID")
+            .WithDescription("Retorna os detalhes de um administrador específico, identificado por seu ID.");
 
 
             endpoints.MapPost("/administradores", ([FromBody] AdministradorDTO administradorDTO, IAdministradorService administradorService) =>
@@ -238,7 +262,10 @@ public class Startup
             })
             .RequireAuthorization()
             .RequireAuthorization(new AuthorizeAttribute { Roles = "Adm" })
-            .WithTags("Administradores");
+            .WithTags("Administradores")
+            .WithName("IncluirAdministrador")
+            .WithSummary("Inclui um novo administrador")
+            .WithDescription("Cadastra um novo administrador. O campo 'Perfil' pode ser 'Adm' ou 'Editor'.");
 
             #endregion
 
@@ -283,7 +310,10 @@ public class Startup
             })
             .RequireAuthorization()
             .RequireAuthorization(new AuthorizeAttribute { Roles = "Adm,Editor" })
-            .WithTags("Veiculos");
+            .WithTags("Veiculos")
+            .WithName("IncluirVeiculo")
+            .WithSummary("Inclui um novo veículo")
+            .WithDescription("Cadastra um novo veículo. O campo 'Ano' deve ser superior a 1950 e os demais campos são obrigatórios.");
 
 
             endpoints.MapGet("/veiculos", ([FromQuery] int? pagina, IVeiculoService veiculoService) =>
@@ -291,7 +321,12 @@ public class Startup
                 var veiculos = veiculoService.Todos(pagina);
 
                 return Results.Ok(veiculos);
-            }).RequireAuthorization().WithTags("Veiculos");
+            })
+            .RequireAuthorization()
+            .WithTags("Veiculos")
+            .WithName("TodosVeiculos")
+            .WithSummary("Lista todos os veículos")
+            .WithDescription("Retorna uma lista paginada de todos os veículos cadastrados.");
 
             endpoints.MapGet("/veiculos/{id}", ([FromRoute] int id, IVeiculoService veiculoService) =>
             {
@@ -301,7 +336,10 @@ public class Startup
             })
             .RequireAuthorization()
             .RequireAuthorization(new AuthorizeAttribute { Roles = "Adm,Editor" })
-            .WithTags("Veiculos");
+            .WithTags("Veiculos")
+            .WithName("BuscarVeiculoPorId")
+            .WithSummary("Busca um veículo por ID")
+            .WithDescription("Retorna os detalhes de um veículo específico, identificado por seu ID.");
 
 
             endpoints.MapPut("/veiculos/{id}", ([FromRoute] int id, VeiculoDTO veiculoDTO, IVeiculoService veiculoService) =>
@@ -323,7 +361,10 @@ public class Startup
             })
             .RequireAuthorization()
             .RequireAuthorization(new AuthorizeAttribute { Roles = "Adm" })
-            .WithTags("Veiculos");
+            .WithTags("Veiculos")
+            .WithName("AtualizarVeiculo")
+            .WithSummary("Atualiza um veículo existente")
+            .WithDescription("Atualiza os dados de um veículo existente, identificado por seu ID. Somente administradores com perfil 'Adm' podem atualizar veículos.");
 
 
             endpoints.MapDelete("/veiculos/{id}", ([FromRoute] int id, IVeiculoService veiculoService) =>
@@ -337,7 +378,10 @@ public class Startup
             })
             .RequireAuthorization()
             .RequireAuthorization(new AuthorizeAttribute { Roles = "Adm" })
-            .WithTags("Veiculos");
+            .WithTags("Veiculos")
+            .WithName("ApagarVeiculo")
+            .WithSummary("Apaga um veículo existente")
+            .WithDescription("Remove um veículo existente, identificado por seu ID. Somente administradores com perfil 'Adm' podem apagar veículos.");
 
             #endregion
         });
