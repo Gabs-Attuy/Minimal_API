@@ -2,6 +2,15 @@
 
 Projeto desenvolvido como desafio prático do Bootcamp Avanade - Back-end com .NET e IA, utilizando ASP.NET 8 Minimal API, Entity Framework Core e autenticação JWT.
 
+O projeto foi estruturado com foco em boas práticas de arquitetura, segurança, testes automatizados e deploy em ambiente cloud (AWS EC2).
+
+## Deploy
+
+A aplicação está hospedada em uma instância EC2 na AWS com IP público fixo (Elastic IP).
+
+* Swagger: http://3.219.27.134/swagger
+* API REST disponível publicamente
+
 ## Funcionalidades
 
 ### Administradores
@@ -92,7 +101,7 @@ dotnet run
 
 Após iniciar a aplicação, acessar:
 
-http://localhost:port/swagger
+http://localhost:5201/swagger
 
 ## Executando os Testes
 
